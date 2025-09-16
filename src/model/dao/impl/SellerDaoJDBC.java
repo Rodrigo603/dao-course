@@ -93,10 +93,13 @@ public class SellerDaoJDBC implements SellerDao {
 	public void deleteById(Integer id) {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement("DELETE FROM seller WHERE id = ?");
+			st = conn.prepareStatement("DELETE FROM seller WHERE Id = ?");
 			st.setInt(1, id);
 			
-			st.executeUpdate();
+			int rows = st.executeUpdate();
+			if (rows == 0) {
+				throw new DbException("Id do not exist.");
+			}
 		}
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
@@ -121,9 +124,10 @@ public class SellerDaoJDBC implements SellerDao {
 			if (rs.next()) {
 				Department department = instantiateDepartment(rs);
 				Seller seller = instantiateSeller(rs,department);
+				return seller;
 			}
-			return null;
-			
+			return null;	
+		
 		}
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
